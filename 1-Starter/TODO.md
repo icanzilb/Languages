@@ -1,1 +1,0 @@
-Add the starter version of the tutorial
