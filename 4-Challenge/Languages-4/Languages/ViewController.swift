@@ -68,6 +68,8 @@ class ViewController: UIViewController {
     // either expands a single view or equalizes all heights
     func adjustHeights(viewToSelect: UIView, shouldSelect: Bool) {
         
+        var newConstraints: [NSLayoutConstraint] = []
+        
         for constraint in viewToSelect.superview!.constraints() as [NSLayoutConstraint] {
             if contains(views, constraint.firstItem as UIView) &&
                 constraint.firstAttribute == .Height {
@@ -81,7 +83,7 @@ class ViewController: UIViewController {
                     }
 
                     //add new height constraint
-                    let newConstraint = NSLayoutConstraint(
+                    let con = NSLayoutConstraint(
                         item: constraint.firstItem,
                         attribute: .Height,
                         relatedBy: .Equal,
@@ -89,10 +91,12 @@ class ViewController: UIViewController {
                         attribute: .Height,
                         multiplier: multiplier,
                         constant: 0.0)
-                    viewToSelect.superview!.addConstraint(newConstraint)
+                    
+                    newConstraints.append(con)
             }
         }
         
+        NSLayoutConstraint.activateConstraints(newConstraints)
     }
     
     // deselects any selected views and selects the tapped view
@@ -163,6 +167,10 @@ class ViewController: UIViewController {
         UIView.animateWithDuration(0.5, delay: 0.0, options: .CurveEaseOut, animations: {
             self.readingView.superview!.layoutIfNeeded()
         }, completion: nil)
+        
+        deselectCurrentView = {
+            self.toggleReadingImageSize(self.readingImage, isSelected: false)
+        }
     }
 
     func toggleReadingImageSize(imageView: UIImageView, isSelected: Bool) {
@@ -172,7 +180,7 @@ class ViewController: UIViewController {
                 
                 imageView.superview!.removeConstraint(constraint)
                 
-                let newConstraint = NSLayoutConstraint(
+                let con = NSLayoutConstraint(
                     item: constraint.firstItem,
                     attribute: .Height,
                     relatedBy: .Equal,
@@ -180,7 +188,7 @@ class ViewController: UIViewController {
                     attribute: .Height,
                     multiplier: isSelected ? 0.33 : 0.67,
                     constant: 0.0)
-                imageView.superview!.addConstraint(newConstraint)
+                con.active = true
                 
                 break
             }
@@ -208,11 +216,9 @@ class ViewController: UIViewController {
     }
     
     func hideUnderstandingButton() {
-        UIView.animateWithDuration(0.5, delay: 0.0, options: .CurveEaseOut | .BeginFromCurrentState, animations: {
+        UIView.animateWithDuration(0.25, delay: 0.0, options: .CurveEaseOut | .BeginFromCurrentState, animations: {
             self.understandButton.alpha = 0.0
-        }, completion: {_ in
-            self.understandButton.removeFromSuperview()
-        })
+        }, completion: nil)
     }
     
     func showUnderstandingButton(isSelected: Bool) {
@@ -222,6 +228,7 @@ class ViewController: UIViewController {
             return
         }
         
+        understandButton?.removeFromSuperview()
         understandButton = UIButton.buttonWithType(.Custom) as UIButton
         understandButton.backgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.9)
         understandButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
@@ -233,26 +240,23 @@ class ViewController: UIViewController {
         understandingView.addSubview(understandButton)
         
         let conX = NSLayoutConstraint(item: understandButton, attribute: .CenterX, relatedBy: .Equal, toItem: understandingView, attribute: .CenterX, multiplier: 1.0, constant: 0.0)
-        understandingView.addConstraint(conX)
-        
-        let conY = NSLayoutConstraint(item: understandButton, attribute: .Bottom, relatedBy: .Equal, toItem: understandingView, attribute: .Bottom, multiplier: 0.75, constant: -understandingView.frame.size.height)
-        understandingView.addConstraint(conY)
-        
+        let conY = NSLayoutConstraint(item: understandButton, attribute: .Bottom, relatedBy: .Equal, toItem: understandingView, attribute: .Bottom, multiplier: 0.75, constant: understandingView.frame.size.height)
         let conWidth = NSLayoutConstraint(item: understandButton, attribute: .Width, relatedBy: .Equal, toItem: understandingView, attribute: .Width, multiplier: 0.5, constant: 0.0)
-        understandingView.addConstraint(conWidth)
-        
         let conHeight = NSLayoutConstraint(item: understandButton, attribute: .Height, relatedBy: .Equal, toItem: understandButton, attribute: .Width, multiplier: 0.25, constant: 0.0)
-        understandingView.addConstraint(conHeight)
         
-        understandingView.layoutIfNeeded()
+        NSLayoutConstraint.activateConstraints([conX, conY, conWidth, conHeight])
+        understandButton.layoutIfNeeded()
         
-        UIView.animateWithDuration(1.33, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.0, options: .BeginFromCurrentState, animations: {
+        UIView.animateWithDuration(1.33, delay: 0.1, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.0, options: .BeginFromCurrentState, animations: {
             conY.constant = 0.0
-            self.understandingView.layoutIfNeeded()
+            self.understandButton.layoutIfNeeded()
         }, completion: nil)
+        
     }
     
     func toggleUnderstandingImageViewSize(imageView: UIImageView, isSelected: Bool) {
+        
+        var newConstraints: [NSLayoutConstraint] = []
         
         for constraint in imageView.superview!.constraints() as [NSLayoutConstraint] {
             if constraint.firstItem as UIView == imageView && constraint.firstAttribute == .Height {
@@ -261,7 +265,7 @@ class ViewController: UIViewController {
                 imageView.superview!.removeConstraint(constraint)
                 
                 //add new height constraint
-                let newConstraint = NSLayoutConstraint(
+                let con = NSLayoutConstraint(
                     item: constraint.firstItem,
                     attribute: .Height,
                     relatedBy: .Equal,
@@ -269,7 +273,7 @@ class ViewController: UIViewController {
                     attribute: .Height,
                     multiplier: isSelected ? 1.6 : 0.45,
                     constant: 0.0)
-                imageView.superview!.addConstraint(newConstraint)
+                newConstraints.append(con)
             }
             
             if constraint.firstItem as UIView == imageView && constraint.firstAttribute == .CenterY {
@@ -278,7 +282,7 @@ class ViewController: UIViewController {
                 imageView.superview!.removeConstraint(constraint)
                 
                 //add new vertical constraint
-                let newConstraint = NSLayoutConstraint(
+                let con = NSLayoutConstraint(
                     item: constraint.firstItem,
                     attribute: .CenterY,
                     relatedBy: .Equal,
@@ -286,10 +290,11 @@ class ViewController: UIViewController {
                     attribute: .CenterY,
                     multiplier: isSelected ? 1.8 : 0.75,
                     constant: 0.0)
-                imageView.superview!.addConstraint(newConstraint)
+                newConstraints.append(con)
             }
         }
+        
+        NSLayoutConstraint.activateConstraints(newConstraints)
     }
-
-
+    
 }
