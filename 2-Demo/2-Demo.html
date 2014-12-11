@@ -1,0 +1,169 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>2-Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+body{-webkit-font-smoothing:antialiased;font-family:"Helvetica Neue",Helvetica,Arial,Verdana,sans-serif;margin:30px 0 0;padding:0;background:#fff}#wrapper{padding:20px}li{font-size:110%}li li{font-size:100%}li p{font-size:100%;margin:.5em 0}h1{color:#000}h2{color:#111}h3{color:#111;margin:0}h4{color:#111}h5{color:#111}h6{font-size:1em;line-height:1.5em;margin:1.5em 0}body,p,td,div{color:#111;font-family:"Helvetica Neue",Helvetica,Arial,Verdana,sans-serif;word-wrap:break-word}a{color:#0d6ea1;text-decoration:none;-webkit-transition:color 0.2s ease-in-out;-moz-transition:color 0.2s ease-in-out;-o-transition:color 0.2s ease-in-out;-ms-transition:color 0.2s ease-in-out;transition:color 0.2s ease-in-out}a:hover{color:#3593d9}body{font-size:15px;line-height:21px;margin:0 auto}h1{font-size:37px;line-height:42px;margin-top:42px;margin-bottom:21px}h2{font-size:27px;line-height:42px;margin-top:42px;margin-bottom:21px}h3{font-size:20px;line-height:21px;margin-top:21px;margin-bottom:21px}h4{font-size:20px;line-height:21px;margin-top:21px;margin-bottom:21px}p,ul,ol,pre,table,blockquote{margin-top:21px;margin-bottom:21px}hr{border:1px solid;margin:-1px 0}ul ul,ol ol,ul ol,ol ul{margin-top:0;margin-bottom:0}b,strong,em,small,code{line-height:1}.footnote{color:#0d6ea1;font-size:.8em;vertical-align:super}#wrapper img{max-width:100%;height:auto}dd{font-size:1em;margin-bottom:1em}li>p:first-child{margin:0}ul ul,ul ol{margin-bottom:.4em}caption,col,colgroup,table,tbody,td,tfoot,th,thead,tr{border-spacing:0}table{border:1px solid rgba(0,0,0,0.25);border-collapse:collapse;display:table;empty-cells:hide;margin:-1px 0 1.3125em;padding:0;table-layout:fixed}caption{display:table-caption;font-weight:700}col{display:table-column}colgroup{display:table-column-group}tbody{display:table-row-group}tfoot{display:table-footer-group}thead{display:table-header-group}td,th{display:table-cell}tr{display:table-row}table th,table td{font-size:1.1em;line-height:1.3;padding:.5em 1em 0}table thead{background:rgba(0,0,0,0.15);border:1px solid rgba(0,0,0,0.15);border-bottom:1px solid rgba(0,0,0,0.2)}table tbody{background:rgba(0,0,0,0.05)}table tfoot{background:rgba(0,0,0,0.15);border:1px solid rgba(0,0,0,0.15);border-top:1px solid rgba(0,0,0,0.2)}figure{display:inline-block;overflow:hidden;position:relative;margin:1em 0 2em}figcaption{font-style:italic;text-align:center;background:white;color:#666}.poetry pre{display:block;font-family:Georgia,Garamond,serif !important;font-size:110% !important;font-style:italic;line-height:1.6em;margin-left:1em}.poetry pre code{font-family:Georgia,Garamond,serif !important;word-break:break-all;word-break:break-word;-webkit-hyphens:auto;-moz-hyphens:auto;hyphens:auto;white-space:pre-wrap}blockquote p{font-size:110%;font-style:italic;line-height:1.6em}sup,sub,a.footnote{font-size:1.4ex;height:0;line-height:1;position:relative;vertical-align:super}sub{vertical-align:sub;top:-1px}p,h5{font-size:1.1429em;line-height:1.3125em;margin:1.3125em 0}dt,th{font-weight:700}table tr:nth-child(odd),table th:nth-child(odd),table td:nth-child(odd){background:rgba(255,255,255,0.06)}table tr:nth-child(even),table td:nth-child(even){background:rgba(200,200,200,0.25)}@media print{body{font-size:13px !important}img,table,figure{page-break-inside:avoid}#wrapper{background:#fff;color:#303030;padding:10px;position:relative;text-indent:0}}@media screen{.inverted{background:#252a2a}.inverted #wrapper{background:#252a2a;color:#eee}.inverted hr{border-color:#333f40 !important}.inverted p,.inverted td,.inverted li,.inverted h1,.inverted h2,.inverted h3,.inverted h4,.inverted h5,.inverted h6,.inverted th,.inverted .math,.inverted caption,.inverted dt,.inverted dd{color:#eee}.inverted pre{background:#ccc}.inverted pre code{color:#111}.inverted table{background:none}.inverted table tr:nth-child(odd),.inverted table td:nth-child(odd){background:none}.inverted a{color:#acd1d5}::selection{background:rgba(157,193,200,0.5)}h1::selection{background-color:rgba(45,156,208,0.3)}h2::selection{background-color:rgba(90,182,224,0.3)}h3::selection,h4::selection,h5::selection,h6::selection,li::selection,ol::selection{background-color:rgba(133,201,232,0.3)}code::selection{background-color:rgba(0,0,0,0.7);color:#eee}code span::selection{background-color:rgba(0,0,0,0.7) !important;color:#eee !important}a::selection{background-color:rgba(255,230,102,0.2)}.inverted a::selection{background-color:rgba(255,230,102,0.6)}td::selection,th::selection,caption::selection{background-color:rgba(180,237,95,0.5)}}
+
+@media print{
+#generated-toc-clone,#generated-toc{display:none!important}
+}
+#generated-toc-clone li.missing,#mkreplaced-toc li.missing{list-style-type:none!important}#generated-toc-clone li, #mkreplaced-toc li{list-style-type:upper-roman}#generated-toc-clone li li, #mkreplaced-toc li li{list-style-type:decimal}#generated-toc-clone li li li,#mkreplaced-toc li li li{list-style-type:decimal-leading-zero}#generated-toc-clone li li li li,#mkreplaced-toc li li li li{list-style-type:lower-greek}#generated-toc-clone li li li li li,#mkreplaced-toc li li li li li{list-style-type:disc}#generated-toc-clone li li li li li li,#mkreplaced-toc li li li li li li{list-style-type:square}
+</style>
+
+</head>
+<body class="normal">
+  <div id="wrapper">
+      <h1 id="306:animatingautolayoutconstraintspart2-demo">306: Animating Auto Layout Constraints, Part 2 - Demo</h1>
+
+<p>In this demo you will add some basic auto layout constraints animations to the starter project. The steps here will be explained in the demo, but here are the raw steps in case you miss a step or get stuck.</p>
+
+<h2 id="1findheightconstraints">1) Find Height Constraints</h2>
+
+<p>In <strong>ViewController.swift</strong>, add in <code>adjustHeights(…)</code>:</p>
+
+<pre><code>var newConstraints: [NSLayoutConstraint] = []
+
+for constraint in viewToSelect.superview!.constraints() as [NSLayoutConstraint] {  
+  if contains(views, constraint.firstItem as UIView) &amp;&amp;  
+    constraint.firstAttribute == .Height {  
+    println(&quot;height constraint found&quot;)  
+   }
+}
+</code></pre>
+
+<h2 id="2removeexistingconstraint">2) Remove existing constraint</h2>
+
+<p>Add after the <code>println()</code>:</p>
+
+<pre><code>viewToSelect.superview!.removeConstraint(constraint)
+</code></pre>
+
+<h2 id="3createanewheightconstraint">3) Create a new Height constraint</h2>
+
+<p>Add the code to calculate the multiplier:</p>
+
+<pre><code>var multiplier: CGFloat = 0.34  
+if shouldSelect {  
+  multiplier = (viewToSelect == constraint.firstItem as UIView) ? 0.55 : 0.23  
+}
+</code></pre>
+
+<p>Finally add the new constraint to replace the old one:</p>
+
+<pre><code>let con = NSLayoutConstraint(  
+  item: constraint.firstItem,  
+  attribute: .Height,  
+  relatedBy: .Equal,  
+  toItem: (constraint.firstItem as UIView).superview!,  
+  attribute: .Height,  
+  multiplier: multiplier,  
+  constant: 0.0)
+
+newConstraints.append(con)
+</code></pre>
+
+<p>Activate the constraints:</p>
+
+<pre><code>NSLayoutConstraint.activateConstraints(newConstraints)
+</code></pre>
+
+<h2 id="4addanimations">4) Add animations</h2>
+
+<p>At the bottom of <code>toggleView(…)</code> add:</p>
+
+<pre><code>UIView.animateWithDuration(1.0, delay: 0.00,  
+usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,  
+options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,  
+animations: {
+
+  self.view.layoutIfNeeded()  
+}, completion: nil)
+</code></pre>
+
+<h2 id="5customizespeakinganimations">5) Customize Speaking animations</h2>
+
+<p>In <code>viewDidLoad()</code> replace:</p>
+
+<pre><code>Selector(&quot;toggleView:&quot;)
+</code></pre>
+
+<p>with:</p>
+
+<pre><code>Selector(&quot;toggleSpeaking:&quot;)
+</code></pre>
+
+<p>Add the new tap handler:</p>
+
+<pre><code>func toggleSpeaking(tap: UITapGestureRecognizer) {  
+    toggleView(tap)  
+    let isSelected = (selectedView==tap.view!)  
+}
+</code></pre>
+
+<p>Append to the new method:</p>
+
+<pre><code>UIView.animateWithDuration(1.0, delay: 0.00,  
+usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,  
+options: .CurveEaseIn, animations: {
+
+      if isSelected {  
+         self.changeDetailsTo(kSelectedDetailsText)  
+      } else {  
+         self.changeDetailsTo(kDeselectedDetailsText)  
+      }
+
+}, completion: nil)
+</code></pre>
+
+<h2 id="6animatethespeakingtext">6) Animate the Speaking text</h2>
+
+<p>This will spawn an error because <code>changeDetailsTo(…)</code> is still not implemented – add it to the class:</p>
+
+<pre><code>func changeDetailsTo(text: String) {  
+    speakingDetails.text = text  
+}
+</code></pre>
+
+<p>Add inside the method the code to move the text out of the screen:</p>
+
+<pre><code>for constraint in speakingDetails.superview!.constraints() as [NSLayoutConstraint] {
+
+  if constraint.firstItem as UIView == speakingDetails &amp;&amp;  
+  constraint.firstAttribute == .Leading {  
+    constraint.constant = -view.frame.size.width/2
+
+    speakingView.layoutIfNeeded()  
+    break  
+  }
+}
+</code></pre>
+
+<p>And insert the code to animate the text back to its original location <strong>just before break</strong>:</p>
+
+<pre><code>UIView.animateWithDuration(0.5, delay: 0.1,  
+options: .CurveEaseOut, animations: {  
+  constraint.constant = 0.0  
+  self.speakingView.layoutIfNeeded()  
+}, completion: nil)
+</code></pre>
+
+<h2 id="7deselectviews">7) Deselect views</h2>
+
+<p>When you click not on the same view but on another – the old text stays in the Speaking strip. Append a “deselect” handler to the <code>toggleSpeaking(…)</code> method:</p>
+
+<pre><code>deselectCurrentView = {  
+  self.changeDetailsTo(kDeselectedDetailsText)  
+}
+</code></pre>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Congrats, at this time you should have the basic animations complete, and learned a lot about Auto Layout along the way! You are ready to move on to the lab.</p>
+<!-- ##END MARKED WRAPPER## -->
+    </div>
+</body>
+</html>
