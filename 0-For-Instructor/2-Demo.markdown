@@ -37,7 +37,12 @@ Finally add the new constraint to replace the old one:
       attribute: .Height,
       multiplier: multiplier,
       constant: 0.0)
-    viewToSelect.superview!.addConstraint(con)
+
+    newConstraints.append(con)
+
+Activate the constraints:
+
+    NSLayoutConstraint.activateConstraints(newConstraints)
 ## 4) Add animations
 
 At the bottom of `toggleView(…)` add:
@@ -50,7 +55,7 @@ At the bottom of `toggleView(…)` add:
       self.view.layoutIfNeeded()
     }, completion: nil)
 
-## 5) Customize Reading animations
+## 5) Customize Speaking animations
 
 In `viewDidLoad()` replace:
 
@@ -73,12 +78,15 @@ Append to the new method:
     usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0, 
     options: .CurveEaseIn, animations: {
 
-          self.changeDetailsTo(isSelected ? kSelectedDetailsText : kDeselectedDetailsText)
-          self.view.layoutIfNeeded()
+          if isSelected {
+             self.changeDetailsTo(kSelectedDetailsText)
+          } else {
+             self.changeDetailsTo(kDeselectedDetailsText)
+          }
 
     }, completion: nil)
 
-## 6) Animate the Reading text
+## 6) Animate the Speaking text
 
 This will spawn an error because `changeDetailsTo(…)` is still not implemented – add it to the class:
 
@@ -99,12 +107,11 @@ Add inside the method the code to move the text out of the screen:
       }
     }
 
-And insert the code to animate the text back to its original location just before break:
-
-    constraint.constant = 0.0
+And insert the code to animate the text back to its original location **just before break**:
 
     UIView.animateWithDuration(0.5, delay: 0.1, 
     options: .CurveEaseOut, animations: {
+      constraint.constant = 0.0
       self.speakingView.layoutIfNeeded()
     }, completion: nil)
 
@@ -114,23 +121,6 @@ When you click not on the same view but on another – the old text stays in the
 
     deselectCurrentView = {
       self.changeDetailsTo(kDeselectedDetailsText)
-    }
-
-Now call the “deselect” handler before you select any new views. In `toggleView(…)` insert the following code before assigning value to selectedView:
-
-    if !wasSelected {
-
-        UIView.animateWithDuration(1.0, delay: 0.00, 
-    usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0, 
-    options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState, 
-    animations: {
-
-        self.deselectCurrentView?()
-        self.deselectCurrentView = nil
-
-        self.view.layoutIfNeeded()
-
-      }, completion: nil)
     }
 
 # Conclusion

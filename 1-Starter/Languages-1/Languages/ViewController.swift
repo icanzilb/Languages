@@ -61,7 +61,6 @@ class ViewController: UIViewController {
     }
 
     // MARK: - auto layout animation
-    // either expands a single view or equalizes all heights
     func adjustHeights(viewToSelect: UIView, shouldSelect: Bool) {
         println("tapped: \(viewToSelect) select: \(shouldSelect)")
         
@@ -74,6 +73,22 @@ class ViewController: UIViewController {
         adjustHeights(tap.view!, shouldSelect: !wasSelected)
         
         selectedView = wasSelected ? nil : tap.view!
+        
+        if !wasSelected {
+            
+            UIView.animateWithDuration(1.0, delay: 0.00,
+                usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
+                options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,
+                animations: {
+                    
+                    self.deselectCurrentView?()
+                    self.deselectCurrentView = nil
+                    
+                    self.view.layoutIfNeeded()
+                    
+                }, completion: nil)
+        }
+
     }
     
 }

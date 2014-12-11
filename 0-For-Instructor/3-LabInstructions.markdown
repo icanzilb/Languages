@@ -4,9 +4,9 @@ At this point the UI of the project looks pretty jumpy. This however is nothing 
 
 Following the instructions in this document you will add the following features to the project:
 
-I. **Reading animations**. As of now only the Speaking strip has a special animation applied to it. No fair! You will add a custom animation also to the Reading strip.
+ * **Reading animations**. As of now only the Speaking strip has a special animation applied to it. No fair! You will add a custom animation also to the Reading strip.
 
-II. **Interface Builder integration**. You will learn how to connect an outlet to a constraint in Interface Builder and use it to access a constraint to animate it.
+ * **Interface Builder integration**. You will learn how to connect an outlet to a constraint in Interface Builder and use it to access a constraint to animate it.
 
 # I. Adding a custom animation to the Reading strip
 
@@ -14,17 +14,20 @@ II. **Interface Builder integration**. You will learn how to connect an outlet t
 
 You’ll start by custom Reading animations. In **ViewController.swift**, find and replace in `viewDidLoad()` this:
 
-    Selector("toggleView:")
+    let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
 
 with:
 
-    Selector("toggleReading:")
+    let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleReading:”))
 
 This will allow you to have a custom tap handler for the Reading strip. Add the initial version of that method:
 
     func toggleReading(tap: UITapGestureRecognizer) {
       toggleView(tap)
       let isSelected = (selectedView==tap.view!)
+
+      //custom animations
+
       UIView.animateWithDuration(0.5, delay: 0.0, 
       options: .CurveEaseOut, animations: {
         self.readingView.layoutIfNeeded()
@@ -66,7 +69,7 @@ Then you will need to create the new constraint. If the strip is currently selec
 
 Append just after the last code:
 
-    let newConstraint = NSLayoutConstraint(
+    let con = NSLayoutConstraint(
       item: constraint.firstItem,
       attribute: .Height,
       relatedBy: .Equal,
@@ -74,9 +77,9 @@ Append just after the last code:
       attribute: .Height,
       multiplier: isSelected ? 0.33 : 0.67,
       constant: 0.0)
-    imageView.superview!.addConstraint(newConstraint)
+    con.active = true
 
-You add the new constraint between the image view and its parent and your code is complete.
+You activata the new constraint and your code is complete.
 
 To make a minimal optimization you will also break the loop – there’s only one `.Height` constraint to the image view. Append still inside the if statement:
 
@@ -86,7 +89,13 @@ It’s time you test the code and see the custom animation. Run the app – the 
 
 When you tap Reading the image will start to grow (because its original .Height constraint will force it to) but then the new `.Height` constraint will make it shrink. It looks as if the image grows to push away the two labels and as soon as it touches them shrinks in place. W00t!
 
-**Add screenshots**
+![](./3-LabImages/reading1.png)
+
+There’s one last thing to fix - you need to add a custom deselect handler. Scroll to the bottom of `toggleReading()` and add:
+
+    deselectCurrentView = {
+      self.toggleReadingImageSize(self.readingImage, isSelected: false)
+    }
 
 # II. Interface Builder Integration
 
@@ -104,7 +113,7 @@ First add the outlet declaration inside the `ViewController` class. Add the line
 
     @IBOutlet var speakingTrailing: NSLayoutConstraint!
 
-To connect the outlet open Interface Builder and select the Speaking image:
+Next - open Main.storyboard. To connect the outlet open Interface Builder and select the Speaking image:
 
 ![](./3-LabImages/ib1.png)
 
@@ -124,7 +133,7 @@ Select the Connections tab and you will see the UI allowing you to connect the c
 
 ![](./3-LabImages/ib5.png)
 
-While holding the Ctrl button on your keyboard drag with the mouse from Referencing Outlets to your View Controller object in Interface Builder:
+Drag with the mouse from Referencing Outlets to your View Controller object in Interface Builder:
 
 ![](./3-LabImages/ib6.png)
 
@@ -134,13 +143,19 @@ Now you can access the live constraint at run time just as any other outlet your
 
 Since the only read-write property is the `constant` of the constraint – this is also the only property you can animate without replacing the constraint with a new one.
 
-Let’s offset the image by increasing the constant when the user taps the Speaking strip. Add in `toggleSpeaking(…)` inside the animation block like so (the code to insert is highlighted):
+Switch back to ViewController.swift; let’s offset the image by increasing the constant when the user taps the Speaking strip. Add in `toggleSpeaking(…)` inside the animation block like so (the code to insert is highlighted):
 
     UIView.animateWithDuration(1.0, delay: 0.00, 
     usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0, 
     options: .CurveEaseIn, animations: {
-      self.speakingTrailing.constant = isSelected ? self.speakingView.frame.size.width/2.0 : 0.0
-      self.changeDetailsTo(isSelected ? kSelectedDetailsText : kDeselectedDetailsText)
+
+<span style='background:yellow'>self.speakingTrailing.constant = isSelected ? self.speakingView.frame.size.width/2.0 : 0.0</span>
+
+      if isSelected {
+        self.changeDetailsTo(kSelectedDetailsText)
+      } else {
+        self.changeDetailsTo(kDeselectedDetailsText)
+      }
       self.view.layoutIfNeeded()
     }, completion: nil)
 
@@ -152,7 +167,8 @@ The image moves away when you select Speaking but does not return if you tap ano
 
     deselectCurrentView = {
 
-      self.speakingTrailing.constant = 0.0
+<span style='background:yellow'>self.speakingTrailing.constant = 0.0</span>
+
       self.changeDetailsTo(kDeselectedDetailsText)
 
     }

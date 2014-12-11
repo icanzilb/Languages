@@ -61,23 +61,23 @@ class ViewController: UIViewController {
     }
 
     // MARK: - auto layout animation
-    // either expands a single view or equalizes all heights
     func adjustHeights(viewToSelect: UIView, shouldSelect: Bool) {
+        println("tapped: \(viewToSelect) select: \(shouldSelect)")
+        
+        var newConstraints: [NSLayoutConstraint] = []
         
         for constraint in viewToSelect.superview!.constraints() as [NSLayoutConstraint] {
             if contains(views, constraint.firstItem as UIView) &&
                 constraint.firstAttribute == .Height {
-
-                    //remove current height constraint
+                    println("height constraint found")
                     viewToSelect.superview!.removeConstraint(constraint)
-
+                    
                     var multiplier: CGFloat = 0.34
                     if shouldSelect {
                         multiplier = (viewToSelect == constraint.firstItem as UIView) ? 0.55 : 0.23
                     }
-
-                    //add new height constraint
-                    let newConstraint = NSLayoutConstraint(
+                    
+                    let con = NSLayoutConstraint(
                         item: constraint.firstItem,
                         attribute: .Height,
                         relatedBy: .Equal,
@@ -85,10 +85,12 @@ class ViewController: UIViewController {
                         attribute: .Height,
                         multiplier: multiplier,
                         constant: 0.0)
-                    viewToSelect.superview!.addConstraint(newConstraint)
+                    
+                    newConstraints.append(con)
             }
         }
         
+        NSLayoutConstraint.activateConstraints(newConstraints)
     }
     
     // deselects any selected views and selects the tapped view
@@ -96,32 +98,51 @@ class ViewController: UIViewController {
         
         let wasSelected = selectedView==tap.view!
         adjustHeights(tap.view!, shouldSelect: !wasSelected)
-
-        if !wasSelected {
-            UIView.animateWithDuration(1.0, delay: 0.00, usingSpringWithDamping: 0.4, initialSpringVelocity: 10.0, options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState, animations: {
-                self.deselectCurrentView?()
-                self.deselectCurrentView = nil
-                self.view.layoutIfNeeded()
-                }, completion: nil)
-        }
-
+        
         selectedView = wasSelected ? nil : tap.view!
         
-        UIView.animateWithDuration(1.0, delay: 0.00, usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0, options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState, animations: {
-            self.view.layoutIfNeeded()
+        if !wasSelected {
+            
+            UIView.animateWithDuration(1.0, delay: 0.00,
+                usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
+                options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,
+                animations: {
+                    
+                    self.deselectCurrentView?()
+                    self.deselectCurrentView = nil
+                    
+                    self.view.layoutIfNeeded()
+                    
+                }, completion: nil)
+        }
+        
+        UIView.animateWithDuration(1.0, delay: 0.00,
+            usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
+            options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,
+            animations: {
+                
+                self.view.layoutIfNeeded()
         }, completion: nil)
-
     }
-
+    
     func toggleSpeaking(tap: UITapGestureRecognizer) {
         toggleView(tap)
         let isSelected = (selectedView==tap.view!)
         
-        UIView.animateWithDuration(1.0, delay: 0.00, usingSpringWithDamping: 0.4, initialSpringVelocity: 10.0, options: .CurveEaseIn, animations: {
-            self.changeDetailsTo(isSelected ? kSelectedDetailsText : kDeselectedDetailsText)
-            self.view.layoutIfNeeded()
-        }, completion: nil)
+        UIView.animateWithDuration(1.0, delay: 0.00,
+            usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
+            options: .CurveEaseIn, animations: {
+                
+                if isSelected {
+                    self.changeDetailsTo(kSelectedDetailsText)
+                } else {
+                    self.changeDetailsTo(kDeselectedDetailsText)
+                }
 
+            self.view.layoutIfNeeded()
+                
+        }, completion: nil)
+        
         deselectCurrentView = {
             self.changeDetailsTo(kDeselectedDetailsText)
         }
@@ -131,19 +152,21 @@ class ViewController: UIViewController {
         speakingDetails.text = text
         
         for constraint in speakingDetails.superview!.constraints() as [NSLayoutConstraint] {
-            if constraint.firstItem as UIView == speakingDetails && constraint.firstAttribute == .Leading {
-                
-                constraint.constant = -view.frame.size.width/2
-                speakingView.layoutIfNeeded()
-                
-                constraint.constant = 0.0
-                UIView.animateWithDuration(0.5, delay: 0.1, options: .CurveEaseOut, animations: {
-                    self.speakingView.layoutIfNeeded()
-                }, completion: nil)
+            
+            if constraint.firstItem as UIView == speakingDetails &&
+                constraint.firstAttribute == .Leading {
+                    constraint.constant = -view.frame.size.width/2
+                    
+                    speakingView.layoutIfNeeded()
 
-                break
+                    UIView.animateWithDuration(0.5, delay: 0.1,
+                        options: .CurveEaseOut, animations: {
+                            constraint.constant = 0.0
+                            self.speakingView.layoutIfNeeded()
+                        }, completion: nil)
+                    
+                    break
             }
         }
-
     }
 }

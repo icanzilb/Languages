@@ -45,7 +45,7 @@ Inside the` if `body remove the existing constraint. Then replace it with a new 
       multiplier: isSelected ? 1.8 : 0.75,
       constant: 0.0)
 
-This new constraint will move the image away when the strip is selected. The two constraints will animate together when you call `layoutIfNeeded()`.
+This new constraint will move the image away when the strip is selected. The two constraints will animate together when you call `layoutIfNeeded()`. Don’t forget to activate the new constraint.
 
 It is actually time to add the animation code – scroll to `toggleUnderstanding(…)` and add:
 
@@ -59,7 +59,7 @@ This code will decrease the alpha of the image when the strip is selected and an
 
 ![](./4-ChallengeImages/ch1.png)
 
-Now wrap up by setting `deselectCurrentView` at the bottom of toggleUnderstanding(...) – you need to call `toggleUnderstandingImageViewSize(…)` and reset the alpha property of `understandingImage`. This should be walk in the park for you after everything you achieved in this tutorial – I’ll see in you in the next challenge.
+Now wrap up by setting `deselectCurrentView` at the bottom of `toggleUnderstanding(…)` – you need to call `toggleUnderstandingImageViewSize(…)` and reset the alpha property of `understandingImage`. This should be walk in the park for you after everything you achieved in this tutorial – I’ll see in you in the next challenge.
 
 ## Challenge B: Add a button and animate its constraints
 
