@@ -28,187 +28,182 @@ let kSelectedDetailsText = "Excercises: 67%\nConversations: 50%\nDaily streak: 4
 
 // MARK: - ViewController
 class ViewController: UIViewController {
+  
+  @IBOutlet var speakingTrailing: NSLayoutConstraint!
+  
+  // MARK: IB outlets
+  @IBOutlet var speakingDetails: UILabel!
+  @IBOutlet var understandingImage: UIImageView!
+  @IBOutlet var readingImage: UIImageView!
+  
+  @IBOutlet var speakingView: UIView!
+  @IBOutlet var understandingView: UIView!
+  @IBOutlet var readingView: UIView!
+  
+  // MARK: class properties
+  var views: [UIView]!
+  
+  var selectedView: UIView?
+  var deselectCurrentView: (()->())?
+  
+  // MARK: - view controller methods
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    views = [speakingView, readingView, understandingView]
+    
+    let speakingTap = UITapGestureRecognizer(target: self, action: Selector("toggleSpeaking:"))
+    speakingView.addGestureRecognizer(speakingTap)
+    
+    let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleReading:"))
+    readingView.addGestureRecognizer(readingTap)
+    
+    let understandingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
+    understandingView.addGestureRecognizer(understandingTap)
+  }
+  
+  // MARK: - auto layout animation
+  func adjustHeights(viewToSelect: UIView, shouldSelect: Bool) {
+    println("tapped: \(viewToSelect) select: \(shouldSelect)")
+    
+    var newConstraints: [NSLayoutConstraint] = []
+    
+    for constraint in viewToSelect.superview!.constraints() as [NSLayoutConstraint] {
+      if contains(views, constraint.firstItem as UIView) &&
+        constraint.firstAttribute == .Height {
+          println("height constraint found")
+          
+          NSLayoutConstraint.deactivateConstraints([constraint])
+          
+          var multiplier: CGFloat = 0.34
+          if shouldSelect {
+            multiplier = (viewToSelect == constraint.firstItem as UIView) ? 0.55 : 0.23
+          }
 
-    @IBOutlet var speakingTrailing: NSLayoutConstraint!
-    
-    // MARK: IB outlets
-    @IBOutlet var speakingDetails: UILabel!
-    @IBOutlet var understandingImage: UIImageView!
-    @IBOutlet var readingImage: UIImageView!
-    
-    @IBOutlet var speakingView: UIView!
-    @IBOutlet var understandingView: UIView!
-    @IBOutlet var readingView: UIView!
-    
-    // MARK: class properties
-    var views: [UIView]!
-    
-    var selectedView: UIView?
-    var deselectCurrentView: (()->())?
-    
-    // MARK: - view controller methods
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        views = [speakingView, readingView, understandingView]
-        
-        let speakingTap = UITapGestureRecognizer(target: self, action: Selector("toggleSpeaking:"))
-        speakingView.addGestureRecognizer(speakingTap)
-
-        let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleReading:"))
-        readingView.addGestureRecognizer(readingTap)
-
-        let understandingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
-        understandingView.addGestureRecognizer(understandingTap)
+          let con = NSLayoutConstraint(
+            item: constraint.firstItem,
+            attribute: .Height,
+            relatedBy: .Equal,
+            toItem: (constraint.firstItem as UIView).superview!,
+            attribute: .Height,
+            multiplier: multiplier,
+            constant: 0.0)
+          
+          newConstraints.append(con)
+      }
     }
 
-    // MARK: - auto layout animation
-    func adjustHeights(viewToSelect: UIView, shouldSelect: Bool) {
-        println("tapped: \(viewToSelect) select: \(shouldSelect)")
-        
-        var newConstraints: [NSLayoutConstraint] = []
-        
-        for constraint in viewToSelect.superview!.constraints() as [NSLayoutConstraint] {
-            if contains(views, constraint.firstItem as UIView) &&
-                constraint.firstAttribute == .Height {
-                    println("height constraint found")
-                    viewToSelect.superview!.removeConstraint(constraint)
-                    
-                    var multiplier: CGFloat = 0.34
-                    if shouldSelect {
-                        multiplier = (viewToSelect == constraint.firstItem as UIView) ? 0.55 : 0.23
-                    }
-                    
-                    let con = NSLayoutConstraint(
-                        item: constraint.firstItem,
-                        attribute: .Height,
-                        relatedBy: .Equal,
-                        toItem: (constraint.firstItem as UIView).superview!,
-                        attribute: .Height,
-                        multiplier: multiplier,
-                        constant: 0.0)
-                    
-                    newConstraints.append(con)
-            }
-        }
-        
-        NSLayoutConstraint.activateConstraints(newConstraints)
-    }
+    NSLayoutConstraint.activateConstraints(newConstraints)
+  }
+  
+  // deselects any selected views and selects the tapped view
+  func toggleView(tap: UITapGestureRecognizer) {
     
-    // deselects any selected views and selects the tapped view
-    func toggleView(tap: UITapGestureRecognizer) {
-        
-        let wasSelected = selectedView==tap.view!
-        adjustHeights(tap.view!, shouldSelect: !wasSelected)
-        
-        selectedView = wasSelected ? nil : tap.view!
-        
-        if !wasSelected {
-            
-            UIView.animateWithDuration(1.0, delay: 0.00,
-                usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
-                options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,
-                animations: {
-                    
-                    self.deselectCurrentView?()
-                    self.deselectCurrentView = nil
-                    
-                    self.view.layoutIfNeeded()
-                    
-                }, completion: nil)
-        }
-        
-        UIView.animateWithDuration(1.0, delay: 0.00,
-            usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
-            options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,
-            animations: {
-                
-                self.view.layoutIfNeeded()
+    let wasSelected = selectedView==tap.view!
+    adjustHeights(tap.view!, shouldSelect: !wasSelected)
+    
+    selectedView = wasSelected ? nil : tap.view!
+    
+    if !wasSelected {
+      
+      UIView.animateWithDuration(1.0, delay: 0.00,
+        usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
+        options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,
+        animations: {
+          
+          self.deselectCurrentView?()
+          self.deselectCurrentView = nil
+          
         }, completion: nil)
     }
     
-    func toggleSpeaking(tap: UITapGestureRecognizer) {
-        toggleView(tap)
-        let isSelected = (selectedView==tap.view!)
+    UIView.animateWithDuration(1.0, delay: 0.00,
+      usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
+      options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,
+      animations: {
         
-        UIView.animateWithDuration(1.0, delay: 0.00,
-            usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
-            options: .CurveEaseIn, animations: {
-                
-            self.speakingTrailing.constant = isSelected ? self.speakingView.frame.size.width/2.0 : 0.0
-                
-            if isSelected {
-                self.changeDetailsTo(kSelectedDetailsText)
-            } else {
-                self.changeDetailsTo(kDeselectedDetailsText)
-            }
+        self.view.layoutIfNeeded()
+      }, completion: nil)
 
-            self.view.layoutIfNeeded()
-                
-        }, completion: nil)
-        
-        deselectCurrentView = {
-            self.changeDetailsTo(kDeselectedDetailsText)
-            self.speakingTrailing.constant = 0.0
-        }
-    }
+  }
+  
+  //speaking
+  func updateSpeakingDetails(#selected: Bool) {
+    speakingDetails.text = selected ? kSelectedDetailsText : kDeselectedDetailsText
     
-    func changeDetailsTo(text: String) {
-        speakingDetails.text = text
-        
-        for constraint in speakingDetails.superview!.constraints() as [NSLayoutConstraint] {
-            
-            if constraint.firstItem as UIView == speakingDetails &&
-                constraint.firstAttribute == .Leading {
-                    constraint.constant = -view.frame.size.width/2
-                    
-                    speakingView.layoutIfNeeded()
-
-                    UIView.animateWithDuration(0.5, delay: 0.1,
-                        options: .CurveEaseOut, animations: {
-                            constraint.constant = 0.0
-                            self.speakingView.layoutIfNeeded()
-                        }, completion: nil)
-                    
-                    break
-            }
-        }
-    }
-    
-    func toggleReading(tap: UITapGestureRecognizer) {
-        toggleView(tap)
-        let isSelected = (selectedView==tap.view!)
-        
-        //custom animations
-        toggleReadingImageSize(readingImage, isSelected: isSelected)
-        
-        UIView.animateWithDuration(0.5, delay: 0.0,
+    for constraint in speakingDetails.superview!.constraints() as [NSLayoutConstraint] {
+      
+      if constraint.firstItem as UIView == speakingDetails &&
+        constraint.firstAttribute == .Leading {
+          constraint.constant = -view.frame.size.width/2
+          
+          speakingView.layoutIfNeeded()
+          
+          UIView.animateWithDuration(0.5, delay: 0.1,
             options: .CurveEaseOut, animations: {
-                self.readingView.layoutIfNeeded()
+              constraint.constant = 0.0
+              self.speakingView.layoutIfNeeded()
             }, completion: nil)
-        
-        deselectCurrentView = {
-            self.toggleReadingImageSize(self.readingImage, isSelected: false)
-        }
+          
+          break
+      }  
     }
     
-    func toggleReadingImageSize(imageView: UIImageView, isSelected: Bool) {
-        for constraint in imageView.superview!.constraints() as [NSLayoutConstraint] {
-            if constraint.firstItem as UIView == imageView && constraint.firstAttribute == .Height {
-                imageView.superview!.removeConstraint(constraint)
-                
-                let con = NSLayoutConstraint(
-                    item: constraint.firstItem,
-                    attribute: .Height,
-                    relatedBy: .Equal,
-                    toItem: (constraint.firstItem as UIView).superview!,
-                    attribute: .Height,
-                    multiplier: isSelected ? 0.33 : 0.67,
-                    constant: 0.0)
-                con.active = true
-                
-                break
-            }
-        }
+  }
+
+  func toggleSpeaking(tap: UITapGestureRecognizer) {
+    toggleView(tap)
+    let isSelected = (selectedView==tap.view!)
+    
+    UIView.animateWithDuration(1.0, delay: 0.00,
+      usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
+      options: .CurveEaseIn, animations: {
+        
+        self.speakingTrailing.constant = isSelected ? self.speakingView.frame.size.width/2.0 : 0.0
+        self.updateSpeakingDetails(selected: isSelected)
+        
+      }, completion: nil)
+
+    deselectCurrentView = {
+      self.speakingTrailing.constant = 0.0
+      self.updateSpeakingDetails(selected: false)
     }
+    
+  }
+
+  //reading
+  func toggleReading(tap: UITapGestureRecognizer) {
+    toggleView(tap)
+    let isSelected = (selectedView==tap.view!)
+    
+    toggleReadingImageSize(readingImage, isSelected: isSelected)
+    UIView.animateWithDuration(0.5, delay: 0.1,
+      options: .CurveEaseOut, animations: {
+        self.readingView.layoutIfNeeded()
+      }, completion: nil)
+
+    deselectCurrentView = {
+      self.toggleReadingImageSize(self.readingImage, isSelected: false)
+    }
+  }
+
+  func toggleReadingImageSize(imageView: UIImageView, isSelected: Bool) {
+    for constraint in imageView.superview!.constraints() as [NSLayoutConstraint] {
+      if constraint.firstItem as UIView == imageView && constraint.firstAttribute == .Height {
+        NSLayoutConstraint.deactivateConstraints([constraint])
+        
+        let con = NSLayoutConstraint(
+          item: constraint.firstItem,
+          attribute: .Height,
+          relatedBy: .Equal,
+          toItem: (constraint.firstItem as UIView).superview!,
+          attribute: .Height,
+          multiplier: isSelected ? 0.33 : 0.67,
+          constant: 0.0)
+        con.active = true
+        
+      }
+    }
+  }
+
 }

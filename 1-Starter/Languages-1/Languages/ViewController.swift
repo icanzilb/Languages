@@ -28,67 +28,88 @@ let kSelectedDetailsText = "Excercises: 67%\nConversations: 50%\nDaily streak: 4
 
 // MARK: - ViewController
 class ViewController: UIViewController {
-
-    // MARK: IB outlets
-    @IBOutlet var speakingDetails: UILabel!
-    @IBOutlet var understandingImage: UIImageView!
-    @IBOutlet var readingImage: UIImageView!
+  
+  // MARK: IB outlets
+  @IBOutlet var speakingDetails: UILabel!
+  @IBOutlet var understandingImage: UIImageView!
+  @IBOutlet var readingImage: UIImageView!
+  
+  @IBOutlet var speakingView: UIView!
+  @IBOutlet var understandingView: UIView!
+  @IBOutlet var readingView: UIView!
+  
+  // MARK: class properties
+  var views: [UIView]!
+  
+  var selectedView: UIView?
+  var deselectCurrentView: (()->())?
+  
+  // MARK: - view controller methods
+  override func viewDidLoad() {
+    super.viewDidLoad()
     
-    @IBOutlet var speakingView: UIView!
-    @IBOutlet var understandingView: UIView!
-    @IBOutlet var readingView: UIView!
+    views = [speakingView, readingView, understandingView]
     
-    // MARK: class properties
-    var views: [UIView]!
+    let speakingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
+    speakingView.addGestureRecognizer(speakingTap)
     
-    var selectedView: UIView?
-    var deselectCurrentView: (()->())?
+    let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
+    readingView.addGestureRecognizer(readingTap)
     
-    // MARK: - view controller methods
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        views = [speakingView, readingView, understandingView]
-        
-        let speakingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
-        speakingView.addGestureRecognizer(speakingTap)
-
-        let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
-        readingView.addGestureRecognizer(readingTap)
-
-        let understandingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
-        understandingView.addGestureRecognizer(understandingTap)
-    }
-
-    // MARK: - auto layout animation
-    func adjustHeights(viewToSelect: UIView, shouldSelect: Bool) {
-        println("tapped: \(viewToSelect) select: \(shouldSelect)")
-        
-    }
+    let understandingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
+    understandingView.addGestureRecognizer(understandingTap)
+  }
+  
+  // MARK: - auto layout animation
+  func adjustHeights(viewToSelect: UIView, shouldSelect: Bool) {
+    println("tapped: \(viewToSelect) select: \(shouldSelect)")
     
-    // deselects any selected views and selects the tapped view
-    func toggleView(tap: UITapGestureRecognizer) {
-        
-        let wasSelected = selectedView==tap.view!
-        adjustHeights(tap.view!, shouldSelect: !wasSelected)
-        
-        selectedView = wasSelected ? nil : tap.view!
-        
-        if !wasSelected {
-            
-            UIView.animateWithDuration(1.0, delay: 0.00,
-                usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
-                options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,
-                animations: {
-                    
-                    self.deselectCurrentView?()
-                    self.deselectCurrentView = nil
-                    
-                    self.view.layoutIfNeeded()
-                    
-                }, completion: nil)
-        }
-
+  }
+  
+  // deselects any selected views and selects the tapped view
+  func toggleView(tap: UITapGestureRecognizer) {
+    
+    let wasSelected = selectedView==tap.view!
+    adjustHeights(tap.view!, shouldSelect: !wasSelected)
+    
+    selectedView = wasSelected ? nil : tap.view!
+    
+    if !wasSelected {
+      
+      UIView.animateWithDuration(1.0, delay: 0.00,
+        usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
+        options: .CurveEaseIn | .AllowUserInteraction | .BeginFromCurrentState,
+        animations: {
+          
+          self.deselectCurrentView?()
+          self.deselectCurrentView = nil
+          
+        }, completion: nil)
     }
     
+  }
+  
+  //speaking
+  func updateSpeakingDetails(#selected: Bool) {
+    speakingDetails.text = selected ? kSelectedDetailsText : kDeselectedDetailsText
+  }
+
+  func toggleSpeaking(tap: UITapGestureRecognizer) {
+    toggleView(tap)
+    let isSelected = (selectedView==tap.view!)
+    
+  }
+  
+  //reading
+  func toggleReading(tap: UITapGestureRecognizer) {
+    toggleView(tap)
+    let isSelected = (selectedView==tap.view!)
+    
+  }
+  
+  func toggleReadingImageSize(imageView: UIImageView, isSelected: Bool) {
+    
+  }
+
+  
 }

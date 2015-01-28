@@ -4,98 +4,23 @@ At this point the UI of the project looks pretty jumpy. This however is nothing 
 
 Following the instructions in this document you will add the following features to the project:
 
- * **Reading animations**. As of now only the Speaking strip has a special animation applied to it. No fair! You will add a custom animation also to the Reading strip.
+ * **Interface Builder integration**. You will learn how to connect an outlet to a constraint in Interface Builder and use that outlet to animate the constraint.
 
- * **Interface Builder integration**. You will learn how to connect an outlet to a constraint in Interface Builder and use it to access a constraint to animate it.
+ * **”Reading strip” animations**. You will add some custom animations also to the Reading strip.
 
-# I. Adding a custom animation to the Reading strip
+# I. Polishing up the Speaking animation
 
-## 1) Adding custom Reading animations
+But first - you need to warm up!
 
-You’ll start by custom Reading animations. In **ViewController.swift**, find and replace in `viewDidLoad()` this:
+When you expand the Speaking view and then tap on another the old details text stays in the Speaking strip. You can assign a closure to `deselectCurrentView` and it will be executed any time the view is deselected. 
 
-    let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
-
-with:
-
-    let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleReading:”))
-
-This will allow you to have a custom tap handler for the Reading strip. Add the initial version of that method:
-
-    func toggleReading(tap: UITapGestureRecognizer) {
-      toggleView(tap)
-      let isSelected = (selectedView==tap.view!)
-
-      //custom animations
-
-      UIView.animateWithDuration(0.5, delay: 0.0, 
-      options: .CurveEaseOut, animations: {
-        self.readingView.layoutIfNeeded()
-      }, completion: nil)
-    }
-
-Just as demoed during the first part of the tutorial for `toggleSpeaking(…)` you call `toggleView(…)` and determine whether the strip is selected or not and save the result in `isSelected`.
-
-This code will take care to resize all three strips accordingly to the current selection. At the end of the method you call `layoutIfNeeded()` inside an animation block so all changes you do to the layout will be animated.
-
-Now you can add your own custom animation code where the `//custom animations` comment is.
-
-Just as before you will add a new method to run your custom animation, replace the comment with:
-
-    toggleReadingImageSize(readingImage, isSelected: isSelected)
-
-And to remove the Xcode error add the inital version of `toggleReadingImageSize(…)`:
-
-    func toggleReadingImageSize(imageView: UIImageView, isSelected: Bool) {
-    }
-
-In a similar way to how the code finds all the `.Height` constraints in `adjustHeight(…)` you will need to find the `.Height` constraint of the `readingImage` image view.
-
-The image view is already connected via an outlet to the image in the Reading strip and you pass it over as the `imageView` parameter of `toggleReadingImageSize(…)`.
-
-Add the code to loop over the constraints affecting `imageView` and also insert an if to check whether you’ve reached the `.Height` constraint:
-
-    for constraint in imageView.superview!.constraints() as [NSLayoutConstraint] {
-      if constraint.firstItem as UIView == imageView && constraint.firstAttribute == .Height {
-
-      }
-    }
-
-Inside the if statement the first thing you will need to do is to remove the existing `.Height` constraint:
-
-    imageView.superview!.removeConstraint(constraint)
-
-Then you will need to create the new constraint. If the strip is currently selected the image height will be **33%** of the strip height, when it’s not that will be **67%**. You will shrink the image when the user taps the strip – this will create a comical effect.
-
-Append just after the last code:
-
-    let con = NSLayoutConstraint(
-      item: constraint.firstItem,
-      attribute: .Height,
-      relatedBy: .Equal,
-      toItem: (constraint.firstItem as UIView).superview!,
-      attribute: .Height,
-      multiplier: isSelected ? 0.33 : 0.67,
-      constant: 0.0)
-    con.active = true
-
-You activata the new constraint and your code is complete.
-
-To make a minimal optimization you will also break the loop – there’s only one `.Height` constraint to the image view. Append still inside the if statement:
-
-    break
-
-It’s time you test the code and see the custom animation. Run the app – the Reading strip should look as usual.
-
-When you tap Reading the image will start to grow (because its original .Height constraint will force it to) but then the new `.Height` constraint will make it shrink. It looks as if the image grows to push away the two labels and as soon as it touches them shrinks in place. W00t!
-
-![](./3-LabImages/reading1.png)
-
-There’s one last thing to fix - you need to add a custom deselect handler. Scroll to the bottom of `toggleReading()` and add:
+Add to `toggleSpeaking(…)` method:
 
     deselectCurrentView = {
-      self.toggleReadingImageSize(self.readingImage, isSelected: false)
+      self.updateSpeakingDetails(selected: false)
     }
+
+This should fix the details text when it’s deselected and you can go on with working on the rest of the menu strips.
 
 # II. Interface Builder Integration
 
@@ -145,19 +70,17 @@ Since the only read-write property is the `constant` of the constraint – this 
 
 Switch back to ViewController.swift; let’s offset the image by increasing the constant when the user taps the Speaking strip. Add in `toggleSpeaking(…)` inside the animation block like so (the code to insert is highlighted):
 
-    UIView.animateWithDuration(1.0, delay: 0.00, 
-    usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0, 
-    options: .CurveEaseIn, animations: {
+    UIView.animateWithDuration(1.0, delay: 0.00,
+      usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
+      options: .CurveEaseIn, animations: {
+        
 
 <span style='background:yellow'>self.speakingTrailing.constant = isSelected ? self.speakingView.frame.size.width/2.0 : 0.0</span>
 
-      if isSelected {
-        self.changeDetailsTo(kSelectedDetailsText)
-      } else {
-        self.changeDetailsTo(kDeselectedDetailsText)
-      }
-      self.view.layoutIfNeeded()
-    }, completion: nil)
+        self.updateSpeakingDetails(selected: isSelected)
+        
+      }, completion: nil)
+
 
 This will move away the image to make space inside the strip. Run the app to see the effect:
 
@@ -175,7 +98,72 @@ The image moves away when you select Speaking but does not return if you tap ano
 
 This will bring back the image to its original location each time the Speaking strip is deselected.
 
-Congratulations, the UI looks amazing! You’re ready to continue on to the challenges, where you’ll rinse and repeat one more time to make sure your new skills are here to last.
+# III. Adding a custom animation to the Reading strip
 
+## 1) Adding custom Reading animations
 
+You’ll start by custom Reading animations. In **ViewController.swift**, find and replace in `viewDidLoad()` this:
+
+    let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleView:"))
+
+with:
+
+    let readingTap = UITapGestureRecognizer(target: self, action: Selector("toggleReading:”))
+
+This will allow you to have a custom tap handler for the Reading strip. Scroll to `toggleReading(…)` and add inside:
+
+    toggleReadingImageSize(readingImage, isSelected: isSelected)
+
+    UIView.animateWithDuration(0.5, delay: 0.1, 
+    options: .CurveEaseOut, animations: {
+      self.readingView.layoutIfNeeded()
+    }, completion: nil)
+
+You will write your custom animation code in `toggleReadingImageSize(…)` and just as before call `layoutIfNeeded()` to animate the changes.
+
+In a similar way to how the code finds all the `.Height` constraints in `adjustHeight(…)` you will need to find the `.Height` constraint of the `readingImage` image view.
+
+The image view is already connected via an outlet to the image in the Reading strip and you pass it over as the `imageView` parameter of `toggleReadingImageSize(…)`.
+
+Scroll to `toggleReadingImageSize(…)` and add the code to loop over the constraints affecting `imageView` and also insert an if to check whether you’ve reached the `.Height` constraint:
+
+    for constraint in imageView.superview!.constraints() as [NSLayoutConstraint] {
+      if constraint.firstItem as UIView == imageView && constraint.firstAttribute == .Height {
+
+      }
+    }
+
+Inside the `if` statement the first thing you will need to do is to remove the existing `.Height` constraint:
+
+    NSLayoutConstraint.deactivateConstraints([constraint])
+
+Then you will need to create the new constraint. If the strip is currently selected the image height will be **33%** of the strip height, when it’s not that will be **67%**. You will shrink the image when the user taps the strip – this will create a comical effect. (You’ll see it in a moment)
+
+Append just after the last code:
+
+    let con = NSLayoutConstraint(
+      item: constraint.firstItem,
+      attribute: .Height,
+      relatedBy: .Equal,
+      toItem: (constraint.firstItem as UIView).superview!,
+      attribute: .Height,
+      multiplier: isSelected ? 0.33 : 0.67,
+      constant: 0.0)
+    con.active = true
+
+You activate the new constraint and your code is complete.
+
+It’s time you test the code and see the custom animation. Run the app – the Reading strip should look as usual.
+
+When you tap Reading the image will start to grow (because its original .Height constraint will force it to) but then the new `.Height` constraint will make it shrink. It looks as if the image grows to push away the two labels and as soon as it touches them shrinks in place. W00t!
+
+![](./3-LabImages/reading1.png)
+
+There’s one last thing to fix - you need to add a custom deselect handler. Scroll to the bottom of `toggleReading()` and add:
+
+    deselectCurrentView = {
+      self.toggleReadingImageSize(self.readingImage, isSelected: false)
+    }
+
+**Congratulations**, the UI looks amazing! You’re ready to continue on to the challenges, where you’ll rinse and repeat one more time to make sure your new skills are here to last.
 

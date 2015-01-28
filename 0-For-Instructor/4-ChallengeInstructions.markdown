@@ -14,19 +14,19 @@ This time you will be (almost) on your own – you will add a new custom constra
 
 Since you should posses all skills how to complete this challenge you will receive only very basic instructions how to proceed about it.
 
-Add a new method called `toggleUnderstanding(tap: UITapGestureRecognizer)` to `ViewController` and change the `understandingTap` in `viewDidLoad()` to invoke that new method. (Keep consulting the existing code throughout the challenge.)
+Add a new method to `ViewController` called: 
+
+    toggleUnderstanding(tap: UITapGestureRecognizer)  
+
+and change the `understandingTap` in `viewDidLoad()` to invoke that new method. (Keep consulting the existing code throughout the challenge.)
 
 Inside `toggleUnderstanding(…)` call `toggleView(…)` and create an `isSelected` constant just like for the other strips.
 
 Than just like for the reading strip call a method to animate the image:
 
-    toggleUnderstandingImageViewSize(understandingImage, isSelected: isSelected)
-
-Create the new method as:
-
     func toggleUnderstandingImageViewSize(imageView: UIImageView, isSelected: Bool)
 
-Lookup `toggleReadingImageSize(…)` and in to`ggleUnderstandingImageViewSize(…)` in the same way create a loop over the imageView’s parent’s constraints.
+Lookup `toggleReadingImageSize(…)` and in `toggleUnderstandingImageViewSize(…)` in the same way create a loop over the imageView’s parent’s constraints.
 
 Add an if condition to find the `.Height` constraint. When you find that constraint – remove it and create a new `.Height` constraint between the `imageView` (as the first item) and its parent view.
 

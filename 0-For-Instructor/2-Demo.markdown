@@ -17,9 +17,10 @@ In **ViewController.swift**, add in `adjustHeights(…)`:
 
 Add after the `println()`:
 
-    viewToSelect.superview!.removeConstraint(constraint)
+    NSLayoutConstraint.deactivateConstraints([constraint])
 
 ## 3) Create a new Height constraint
+
 Add the code to calculate the multiplier:
 
     var multiplier: CGFloat = 0.34
@@ -40,7 +41,7 @@ Finally add the new constraint to replace the old one:
 
     newConstraints.append(con)
 
-Activate the constraints:
+Out of the loop body activate the constraints:
 
     NSLayoutConstraint.activateConstraints(newConstraints)
 ## 4) Add animations
@@ -65,36 +66,21 @@ with:
 
     Selector("toggleSpeaking:")
 
-Add the new tap handler:
+This will now direct the taps on speaking to toggleSpeaking: instead. The method is already included in the starter project.
 
-    func toggleSpeaking(tap: UITapGestureRecognizer) {
-        toggleView(tap)
-        let isSelected = (selectedView==tap.view!)
-    }
-
-Append to the new method:
+Append to `toggleSpeaking(…)`:
 
     UIView.animateWithDuration(1.0, delay: 0.00, 
     usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0, 
     options: .CurveEaseIn, animations: {
 
-          if isSelected {
-             self.changeDetailsTo(kSelectedDetailsText)
-          } else {
-             self.changeDetailsTo(kDeselectedDetailsText)
-          }
+       self.updateSpeakingDetails(selected: isSelected)
 
     }, completion: nil)
 
 ## 6) Animate the Speaking text
 
-This will spawn an error because `changeDetailsTo(…)` is still not implemented – add it to the class:
-
-    func changeDetailsTo(text: String) {
-        speakingDetails.text = text
-    }
-
-Add inside the method the code to move the text out of the screen:
+Find `updateSpeakingDetails(…)` - here you will add some more code to create a speaking specific animation. Add the code to move the text out of the screen:
 
     for constraint in speakingDetails.superview!.constraints() as [NSLayoutConstraint] {
 
@@ -103,26 +89,24 @@ Add inside the method the code to move the text out of the screen:
         constraint.constant = -view.frame.size.width/2
 
         speakingView.layoutIfNeeded()
-        break
+
       }
     }
 
-And insert the code to animate the text back to its original location **just before break**:
+And insert the code to animate the text back after calling `layoutIfNeeded()`:
 
     UIView.animateWithDuration(0.5, delay: 0.1, 
     options: .CurveEaseOut, animations: {
       constraint.constant = 0.0
       self.speakingView.layoutIfNeeded()
     }, completion: nil)
-
-## 7) Deselect views
-
-When you click not on the same view but on another – the old text stays in the Speaking strip. Append a “deselect” handler to the `toggleSpeaking(…)` method:
-
-    deselectCurrentView = {
-      self.changeDetailsTo(kDeselectedDetailsText)
-    }
+       
+     break
 
 # Conclusion
 
-Congrats, at this time you should have the basic animations complete, and learned a lot about Auto Layout along the way! You are ready to move on to the lab.
+Congrats, at this time you should have the basic animations complete, and learned a lot about Auto Layout along the way! 
+
+You now know how to find and replace constraints, animate the layout changes of those new constraints, and also modify existing constraints without removing them first.
+
+You are ready to move on to the lab.
