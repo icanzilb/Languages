@@ -25,7 +25,7 @@ Add the code to calculate the multiplier:
 
     var multiplier: CGFloat = 0.34
     if shouldSelect {
-      multiplier = (viewToSelect == constraint.firstItem as UIView) ? 0.55 : 0.23
+      multiplier = (viewToSelect === constraint.firstItem) ? 0.55 : 0.23
     }
 
 Finally add the new constraint to replace the old one:

@@ -38,7 +38,7 @@ First add the outlet declaration inside the `ViewController` class. Add the line
 
     @IBOutlet var speakingTrailing: NSLayoutConstraint!
 
-Next - open Main.storyboard. To connect the outlet open Interface Builder and select the Speaking image:
+Next - open **Main.storyboard**. To connect the outlet open Interface Builder and select the Speaking image:
 
 ![](./3-LabImages/ib1.png)
 
@@ -68,7 +68,7 @@ Now you can access the live constraint at run time just as any other outlet your
 
 Since the only read-write property is the `constant` of the constraint – this is also the only property you can animate without replacing the constraint with a new one.
 
-Switch back to ViewController.swift; let’s offset the image by increasing the constant when the user taps the Speaking strip. Add in `toggleSpeaking(…)` inside the animation block like so (the code to insert is highlighted):
+Switch back to **ViewController.swift**; let’s offset the image by increasing the constant when the user taps the Speaking strip. Add in `toggleSpeaking(…)` inside the animation block like so (the code to insert is highlighted):
 
     UIView.animateWithDuration(1.0, delay: 0.00,
       usingSpringWithDamping: 0.4, initialSpringVelocity: 1.0,
